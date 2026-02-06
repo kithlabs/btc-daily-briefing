@@ -22,18 +22,26 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          allowed_tools: "WebSearch,Slack,TodoWrite,Read,Write"
+          claude_args: "--allowedTools WebSearch,Bash,Edit,Read,Write,TodoWrite"
           prompt: |
             비트코인 일일 브리핑을 생성하고 Slack으로 전송해.
             
-            **중요: 사용자 입력 없이 자동으로 진행해. AskUserQuestion 사용하지 마.**
+            **중요: 사용자 입력 없이 완전 자동으로 진행. AskUserQuestion 절대 사용 금지.**
             
             ## 작업 순서
-            1. 웹 검색으로 현재 BTC 가격, 24h/7d 변동률 수집
+            1. WebSearch로 현재 BTC 가격, 24h/7d 변동률 수집
             2. 주요 뉴스 및 시장 심리 (Fear & Greed Index) 분석
             3. 기술적 분석 요약 (지지/저항, 추세)
             4. 오늘의 전망 작성
-            5. Slack으로 브리핑 전송 (DM으로)
+            5. 아래 curl 명령으로 Slack Webhook 전송
+            
+            ## Slack 전송 방법
+            리포트 완성 후 Bash로 다음 실행:
+            ```bash
+            curl -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+              -H 'Content-Type: application/json' \
+              -d '{"text": "[완성된 리포트 내용]"}'
+            ```
             
             ## 리포트 포맷
             ```
