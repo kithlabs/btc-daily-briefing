@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
   issues: write
-  id-token: write  # OIDC 토큰 발급 필수
+  id-token: write
 
 jobs:
   briefing:
@@ -22,14 +22,41 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_tools: "WebSearch,Slack,TodoWrite,Read,Write"
           prompt: |
-            비트코인 일일 브리핑을 생성하고 Slack으로 전송해줘.
-
+            비트코인 일일 브리핑을 생성하고 Slack으로 전송해.
+            
+            **중요: 사용자 입력 없이 자동으로 진행해. AskUserQuestion 사용하지 마.**
+            
+            ## 작업 순서
             1. 웹 검색으로 현재 BTC 가격, 24h/7d 변동률 수집
-            2. 주요 뉴스 및 시장 심리 분석
+            2. 주요 뉴스 및 시장 심리 (Fear & Greed Index) 분석
             3. 기술적 분석 요약 (지지/저항, 추세)
             4. 오늘의 전망 작성
-            5. Slack MCP로 DM 전송
-
-            리포트는 한국어로, 간결하게 작성.
-            마지막에 "투자 조언이 아님" 면책 문구 포함.
+            5. Slack으로 브리핑 전송 (DM으로)
+            
+            ## 리포트 포맷
+            ```
+            📊 BTC 일일 브리핑 | [DATE]
+            
+            ## 현재 가격
+            - 현재가: $XX,XXX
+            - 24h 변동: +X.X%
+            - 주간 변동: +X.X%
+            
+            ## 기술적 분석
+            - 지지선: $XX,XXX
+            - 저항선: $XX,XXX
+            - 추세: [bullish/bearish/neutral]
+            
+            ## 시장 심리
+            - Fear & Greed: XX (Greed/Fear/Neutral)
+            - 주요 뉴스: [1줄 요약]
+            
+            ## 오늘의 전망
+            [2-3문장 요약]
+            
+            ⚠️ 이 리포트는 투자 조언이 아닙니다.
+            ```
+            
+            한국어로 작성해.
